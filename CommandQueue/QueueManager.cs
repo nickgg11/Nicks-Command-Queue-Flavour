@@ -32,9 +32,15 @@ namespace CommandQueue
 
         public static Dictionary<ItemTier, bool> queueRepeat = new Dictionary<ItemTier, bool>();
 
+        // Items chosen from command cubes that haven't been picked up yet. The cube drops the item on
+        // the ground, and it only leaves the queue once it reaches the inventory. Until then the next
+        // cube skips over it, so the same queue slot isn't chosen twice.
+        private static readonly List<(ItemTier tier, PickupIndex pickupIndex)> reservations = new List<(ItemTier, PickupIndex)>();
+
         internal static void Enable()
         {
             Run.onRunStartGlobal += InitQueues;
+            Stage.onStageStartGlobal += ClearReservations;
             ModConfig.OnReady += UpdateQueueAvailability;
             UpdateQueueAvailability();
         }
@@ -42,7 +48,9 @@ namespace CommandQueue
         internal static void Disable()
         {
             Run.onRunStartGlobal -= InitQueues;
+            Stage.onStageStartGlobal -= ClearReservations;
             ModConfig.OnReady -= UpdateQueueAvailability;
+            reservations.Clear();
         }
 
         public static void UpdateQueueAvailability()
@@ -166,6 +174,80 @@ namespace CommandQueue
             return entry.pickupIndex;
         }
 
+        // The first queued item of a tier that isn't already reserved by an earlier cube.
+        public static PickupIndex PeekUnreserved(ItemTier tier)
+        {
+            if (!mainQueues.TryGetValue(tier, out var queue) || queue.Count == 0)
+                return PickupIndex.none;
+
+            var skip = new Dictionary<PickupIndex, int>();
+            int reservedCount = 0;
+            foreach (var (reservedTier, pickupIndex) in reservations)
+            {
+                if (reservedTier != tier)
+                    continue;
+                skip.TryGetValue(pickupIndex, out var n);
+                skip[pickupIndex] = n + 1;
+                reservedCount++;
+            }
+
+            // A repeating queue wraps around, so keep going until the reservations are used up.
+            int passes = DoesRepeat(tier) ? reservedCount + 1 : 1;
+            for (int pass = 0; pass < passes; pass++)
+            {
+                foreach (var entry in queue)
+                {
+                    skip.TryGetValue(entry.pickupIndex, out var n);
+                    int skipped = Math.Min(n, entry.count);
+                    if (skipped < entry.count)
+                        return entry.pickupIndex;
+                    skip[entry.pickupIndex] = n - skipped;
+                }
+            }
+            return PickupIndex.none;
+        }
+
+        public static IEnumerable<(ItemTier, PickupIndex)> PeekAllUnreserved()
+        {
+            foreach (var tier in mainQueues.Keys)
+            {
+                var pickupIndex = PeekUnreserved(tier);
+                if (pickupIndex != PickupIndex.none)
+                    yield return (tier, pickupIndex);
+            }
+        }
+
+        public static void Reserve(ItemTier tier, PickupIndex pickupIndex)
+        {
+            reservations.Add((tier, pickupIndex));
+        }
+
+        // Called when the local player gains an item. If it was chosen from a cube, it leaves the queue now.
+        public static void OnItemPickedUp(PickupIndex pickupIndex)
+        {
+            int reservation = reservations.FindIndex(r => r.pickupIndex == pickupIndex);
+            if (reservation < 0)
+                return;
+            var tier = reservations[reservation].tier;
+            reservations.RemoveAt(reservation);
+
+            // The queue may have been edited since the item was chosen, so take the first matching slot.
+            if (!mainQueues.TryGetValue(tier, out var queue))
+                return;
+            int index = queue.FindIndex(entry => entry.pickupIndex == pickupIndex);
+            if (index < 0)
+                return;
+            Remove(tier, index);
+            if (DoesRepeat(tier))
+                Enqueue(pickupIndex);
+        }
+
+        // Items left on the ground don't carry over to the next stage.
+        private static void ClearReservations(Stage stage)
+        {
+            reservations.Clear();
+        }
+
         private static bool TryMerge(ItemTier tier, int into, int from)
         {
             var queue = mainQueues[tier];
@@ -188,6 +270,7 @@ namespace CommandQueue
         // the lists would leave the UI reading a stale queue.
         public static void ClearAllQueues() {
             UpdateQueueAvailability();
+            reservations.Clear();
             foreach (var pair in mainQueues)
             {
                 pair.Value.Clear();
@@ -232,12 +315,6 @@ namespace CommandQueue
 
             // Do a full update instead of up to 6 smaller updates.
             OnQueueChanged?.Invoke(QueueChange.Moved, tier, -1);
-        }
-
-        public static IEnumerable<(ItemTier, PickupIndex)> PeekAll()
-        {
-            return mainQueues.Where(entry => entry.Value.Count > 0)
-                .Select(entry => (entry.Key, entry.Value.First().pickupIndex));
         }
     }
 }

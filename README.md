@@ -45,6 +45,10 @@ This mod continues the work of others. Please go give them some love:
 - A queue for each item tier: White, Green, Red, Boss, Lunar, Void White, Void Green, Void Red, Void Boss,
   **Hallowed** and **Hex**. Page items can be turned on in the config.
 - When you open a Command essence, the next queued item of that tier is picked for you automatically.
+- An item only leaves the queue once you **pick it up**. Open several essences before grabbing the drops and
+  each one picks the next item in line.
+- Only **permanent** items count. Temporary items (the ones that run out on a timer) and ethereal items don't
+  use up a queue slot.
 - **Click** an item to queue it, **Ctrl+click** to queue 10.
 - **Drag and drop** to reorder the queue. Drag with right-click to move half a stack.
 - **Click** a queued item to remove one, **right-click** to remove the whole stack.
@@ -90,6 +94,7 @@ This mod continues the work of others. Please go give them some love:
 4. Pick a tier on the left, then click items to add them to that tier's queue.
 5. Open Command essences as usual: the queued items are picked for you. If the next queued item isn't
    offered, the normal menu opens.
+6. Pick up the dropped item. It leaves the queue once it's in your inventory.
 
 To save your queue, open **Saves**, type a name and click **Save current queue**. Click a save to load it.
 

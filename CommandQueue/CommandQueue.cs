@@ -31,7 +31,7 @@ Future tasks:
 
 namespace CommandQueue
 {
-    [BepInPlugin("com.kuberoot.commandqueue", "CommandQueue", "2.0.0")]
+    [BepInPlugin("com.kuberoot.commandqueue", "CommandQueue", "2.1.0")]
     public class CommandQueue : BaseUnityPlugin
     {
         public static event Action PluginUnloaded;
@@ -93,6 +93,7 @@ namespace CommandQueue
             IsLoaded = true;
 
             On.RoR2.PickupPickerController.OnDisplayBegin += HandleCommandDisplayBegin;
+            On.RoR2.GenericPickupController.PickupMessage.Deserialize += HandlePickupMessage;
             On.RoR2.UI.ScoreboardController.Awake += ScoreboardController_Awake;
             QueueManager.Enable();
             UpdateQueuePreview();
@@ -111,6 +112,7 @@ namespace CommandQueue
             IsLoaded = false;
             PluginUnloaded?.Invoke();
             On.RoR2.PickupPickerController.OnDisplayBegin -= HandleCommandDisplayBegin;
+            On.RoR2.GenericPickupController.PickupMessage.Deserialize -= HandlePickupMessage;
             On.RoR2.UI.ScoreboardController.Awake -= ScoreboardController_Awake;
             QueueManager.Disable();
             QueuePreviewHud.Disable();
@@ -151,7 +153,7 @@ namespace CommandQueue
             var prefab = CommandUIPrefab;
             if (prefab && self.panelPrefab == prefab)
             {
-                foreach(var (tier, pickupIndex) in QueueManager.PeekAll())
+                foreach(var (tier, pickupIndex) in QueueManager.PeekAllUnreserved())
                 {
                     if (self.IsChoiceAvailable(pickupIndex))
                     {
@@ -179,8 +181,10 @@ namespace CommandQueue
                 yield break;
             }
 
-            if (QueueManager.Peek(tier) == pickupIndex)
-                QueueManager.Pop(tier);
+            // The item drops on the ground, it only leaves the queue once it's picked up (see HandlePickupMessage).
+            // Only permanent items count towards the queue, so others don't reserve a slot either.
+            if (IsPermanent(self.options[choiceIndex].pickup) && QueueManager.PeekUnreserved(tier) == pickupIndex)
+                QueueManager.Reserve(tier, pickupIndex);
 
             SubmitChoiceDirect(self, choiceIndex);
         }
@@ -214,6 +218,28 @@ namespace CommandQueue
             writer.Write(PickupPickerController.msgSubmit);
             writer.Write(choiceIndex);
             promptController.FinishMessageToServer(writer);
+        }
+
+        // Temporary items decay out of the inventory and ethereal (rental) items get taken back, so
+        // neither counts towards the queue.
+        private static bool IsPermanent(UniquePickup pickup)
+        {
+            return !pickup.isTempItem && !pickup.isRental;
+        }
+
+        // The server sends this to every client (host included) when someone picks up a pickup. Unlike
+        // Inventory.RpcItemAdded it carries the full pickup state, so temporary and ethereal items can be
+        // told apart, and it isn't sent for items that skip the ground (scrappers, item transforms and so on).
+        private void HandlePickupMessage(On.RoR2.GenericPickupController.PickupMessage.orig_Deserialize orig, GenericPickupController.PickupMessage self, NetworkReader reader)
+        {
+            orig(self, reader);
+
+            var localMaster = LocalUserManager.GetFirstLocalUser()?.cachedMaster;
+            if (!localMaster || self.masterGameObject != localMaster.gameObject)
+                return;
+
+            if (IsPermanent(self.pickupState))
+                QueueManager.OnItemPickedUp(self.pickupState.pickupIndex);
         }
 
         private void ScoreboardController_Awake(On.RoR2.UI.ScoreboardController.orig_Awake orig, ScoreboardController self)

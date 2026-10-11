@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.1.0 - Queue counts items you pick up
+
+- A queued item now leaves the queue when you pick it up, not when the Command essence is opened. The essence
+  drops the item on the ground, so before this the queue went down even if you never grabbed it.
+- Opening another essence before picking up the last one skips the items still waiting on the ground, so the
+  same queue slot isn't picked twice.
+- Only permanent items count towards the queue. Temporary items (the ones that run out on a timer) and ethereal
+  items don't use up a queue slot.
+- Essences from printers and shops count the same as ones from chests.
+- Items still lying on the ground when the stage ends no longer hold a queue slot.
+
 ## 2.0.0 - Risk of Rain 2 1.5, new menu, saves rework
 
 **Game update**
