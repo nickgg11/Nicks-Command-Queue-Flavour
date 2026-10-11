@@ -53,19 +53,29 @@ namespace CommandQueue.UI
             UIFactory.Layout(list, flexibleHeight: 1);
             UIFactory.AddVerticalLayout(list, 8);
 
+            // Every size is pinned (min = preferred, no flex), so neither the page layout nor the button
+            // skin can stretch the pager taller than a save row.
             var pager = UIFactory.CreateRect(root, "Pager");
-            UIFactory.Layout(pager, preferredHeight: PagerHeight);
-            UIFactory.AddHorizontalLayout(pager, 6).childAlignment = TextAnchor.MiddleCenter;
+            UIFactory.Layout(pager, preferredHeight: PagerHeight, flexibleHeight: 0);
+            var pagerLayout = UIFactory.AddHorizontalLayout(pager, 6);
+            pagerLayout.childAlignment = TextAnchor.MiddleCenter;
+            pagerLayout.childForceExpandHeight = false;
 
             var previous = CreateButton(pager, "<", () => { pageIndex--; Refresh(); }, fontSize: PagerFontSize);
-            UIFactory.Layout(previous.rectTransform, preferredWidth: 32);
+            PinPagerSize(previous, 32);
             pageIndicator = CreateButton(pager, null, null, rawText: "Page 1/1", fontSize: PagerFontSize);
             pageIndicator.hgButton.interactable = false;
-            UIFactory.Layout(pageIndicator.rectTransform, preferredWidth: 84);
+            PinPagerSize(pageIndicator, 84);
             var next = CreateButton(pager, ">", () => { pageIndex++; Refresh(); }, fontSize: PagerFontSize);
-            UIFactory.Layout(next.rectTransform, preferredWidth: 32);
+            PinPagerSize(next, 32);
 
             Refresh();
+        }
+
+        private static void PinPagerSize(UIFactory.ButtonWrapper button, float width)
+        {
+            var element = UIFactory.Layout(button.rectTransform, preferredWidth: width, preferredHeight: PagerHeight, flexibleWidth: 0, flexibleHeight: 0);
+            element.minWidth = width;
         }
 
         private static RectTransform CreateRow(Transform parent, string name)

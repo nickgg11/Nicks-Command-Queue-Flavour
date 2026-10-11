@@ -1,29 +1,131 @@
-# CommandQueueWithSave DLC Fix
+# Nicks Command Queue Flavour
 
-This mod is an extension of KubeRoot's commandqueue mod. Perfect for those who enjoy mega item runs. This mod allows you create a "list" of items that your command essences will become when picked up. Additionally it allows the user to save this list to be loaded at a later date. This mod is now Mod? compabitible. If you add or remove mods that add items your save/load orders will remain intact.
+> **AI disclosure:** I used AI to help write and update this mod's code and this page. I have tested the mod
+> and play with it myself. If you find a bug, please report it on the
+> [GitHub page](https://github.com/nickgg11/Nicks-Command-Queue-Flavour/issues).
 
-**ONWARD TO 200 BUNGUS!!**
+Queue up the items you want, and every Command essence you open picks the next one for you. Perfect for
+mega item runs: set up your build once, save it, and load it again next run.
 
-This is a fixed version of the mod [Command Queue with Save](https://thunderstore.io/package/Miniz/CommandQueueWithSave/) that has been uploaded as the old maintainer has been inactive for a year.
-I will take this mod down if Miniz ever returns.
 
-I will add try to improve the mod to be more comfortable if I am able.
+Updated for **Risk of Rain 2 version 1.5**, including the new **Hallowed** and **Hex** items.
 
-## Miniz Command Queue with Save
+![The Command Queue page](https://raw.githubusercontent.com/nickgg11/Nicks-Command-Queue-Flavour/main/ReleaseAssets/blank_queue.png)
 
-[original Mod](https://thunderstore.io/package/Miniz/CommandQueueWithSave/)
+## Credits
 
-Adds save and load feature to this well known mod
+This mod continues the work of others. Please go give them some love:
 
-## CommandQueue Mod
+- [CommandQueue](https://thunderstore.io/c/riskofrain2/p/KubeRoot/CommandQueue/) by **KubeRoot**, the
+  original mod: queues, auto-picking, drag and drop, repeat mode. ([Ko-fi](https://ko-fi.com/kuberoot))
+- [CommandQueueWithSave](https://thunderstore.io/c/riskofrain2/p/Miniz/CommandQueueWithSave/) by **Miniz**,
+  who added saving and loading queues. This mod started as a fix for it after it went inactive; I'll take it
+  down if Miniz ever returns.
+- [CommandQueueExtended](https://thunderstore.io/c/riskofrain2/p/gabrielgad/CommandQueueExtended/) by
+  **gabrielgad**, whose named saves and all-tier queues inspired the reworked save system here.
 
-Original author :
-[KubeRoot](https://ko-fi.com/kuberoot)
+## Why this one?
 
-## Building
+- **Works on 1.5.** Item icons show up (no white boxes), with tooltips, and Hallowed and Hex items can be queued.
+- **LookingGlass compatible out of the box.** No more Command essences giving the wrong item or nothing at all.
+  You don't need LookingGlassCommandFix with this mod.
+- **Built for 10+ item tiers.** A tier sidebar instead of a row of tiny tabs, and a queue that wraps onto more
+  rows instead of running off the edge.
+- **Saves you can trust.** Unlimited named saves, stored per mod profile. Broken or outdated saves load what
+  they can and tell you what was skipped, instead of wiping your queue.
+- **Your old saves come with you.** Saves from Command Queue with Save and CommandQueueExtended are imported
+  automatically.
+- **See what's next without opening the menu**, with the Command Queue Preview on your HUD.
+- **Take your time.** The game pauses while you build your queue in single player.
+- **Fits your screen.** The menu lines up with the item bar at the top of the screen instead of covering the HUD.
 
-Requires the .NET SDK (6 or newer). Game and mod references are restored from NuGet, using the BepInEx
-package feed listed in `nuget.config`, so no game files or extra repositories are needed:
+## Features
+
+### Queues
+- A queue for each item tier: White, Green, Red, Boss, Lunar, Void White, Void Green, Void Red, Void Boss,
+  **Hallowed** and **Hex**. Page items can be turned on in the config.
+- When you open a Command essence, the next queued item of that tier is picked for you automatically.
+- **Click** an item to queue it, **Ctrl+click** to queue 10.
+- **Drag and drop** to reorder the queue. Drag with right-click to move half a stack.
+- **Click** a queued item to remove one, **right-click** to remove the whole stack.
+- **Repeat mode** per tier: picked items go back to the end of the queue, for picking the same items forever.
+- Items of the same kind next to each other merge into one stack.
+- Tooltips with the item's name and description, on both the queue and the item list.
+- Tiers you can't get this run (for example a DLC you have turned off) are hidden, unless you already queued
+  items in them.
+- Void tiers are marked with a split color bar (void color plus the tier they mirror), so Void White, Void
+  Green, Void Red and Void Boss are easy to tell apart.
+
+![An item tooltip, with Ctrl+click to queue 10](https://raw.githubusercontent.com/nickgg11/Nicks-Command-Queue-Flavour/main/ReleaseAssets/add_ten.png)
+
+![A long queue wrapping onto more rows](https://raw.githubusercontent.com/nickgg11/Nicks-Command-Queue-Flavour/main/ReleaseAssets/queue_wrapped.png)
+
+### Saves
+- Unlimited named saves, with pages.
+- Load, overwrite, rename and delete. Overwrite and delete ask you to confirm.
+- Saves are stored in `BepInEx/config/CommandQueue.saves.json`, so each mod profile has its own.
+- Repeat mode settings are saved with the queue.
+- Saves keep working when you add or remove item mods: unknown items are skipped and reported.
+
+![The Saves page](https://raw.githubusercontent.com/nickgg11/Nicks-Command-Queue-Flavour/main/ReleaseAssets/saves_page.png)
+
+### Command Queue Preview
+- Shows the next queued item of each tier on your HUD, and how many more are queued behind it.
+- Sits under the objectives panel in the game's own style, and fits any resolution or aspect ratio.
+- Can be turned off.
+
+![The Command Queue Preview on the HUD](https://raw.githubusercontent.com/nickgg11/Nicks-Command-Queue-Flavour/main/ReleaseAssets/queue_preview.png)
+
+### Quality of life
+- Pauses the game while the Command Queue or Saves page is open (single player only).
+- The scoreboard and queue menu are sized to the item bar at the top of the screen.
+- Settings in the in-game options menu with [Risk of Options](https://thunderstore.io/c/riskofrain2/p/Rune580/Risk_Of_Options/) (optional).
+
+## How to use
+
+1. Start a run with the **Artifact of Command** enabled.
+2. Hold **Tab** to open the scoreboard. Turn on **Toggle Inventory** in the game's controls settings to keep it
+   open without holding the key.
+3. Click **Command Queue** at the top.
+4. Pick a tier on the left, then click items to add them to that tier's queue.
+5. Open Command essences as usual: the queued items are picked for you. If the next queued item isn't
+   offered, the normal menu opens.
+
+To save your queue, open **Saves**, type a name and click **Save current queue**. Click a save to load it.
+
+## Configuration
+
+Change settings in the game's options menu with Risk of Options, or edit
+`BepInEx/config/com.kuberoot.commandqueue.cfg`.
+
+![The mod's settings in the in-game mod options](https://raw.githubusercontent.com/nickgg11/Nicks-Command-Queue-Flavour/main/ReleaseAssets/mod_settings.png)
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| EnabledQueues | All main tiers | Which item tiers get a queue. Toggle tiers under **Enabled Tabs** in Risk of Options. |
+| PauseWhileQueueOpen | On | Pause while the Command Queue or Saves page is open. Single player only. |
+| MatchItemBarWidth | On | Size the scoreboard and menu to the item bar at the top of the screen. |
+| RightClickRemovesStack | On | Right-clicking a queued item removes the whole stack. |
+| BigItemSelectionContainer | On | Use the whole page for the item list. Turn off for the game's command menu layout. |
+| BigItemSelectionScale | 1 | Size of the item buttons. Lower it if you have a lot of modded items. |
+| Show Command Queue Preview | On | Show the preview on the HUD (`[QueuePreview] Enabled` in the config file). |
+| Fallback Position X / Y | 0.985 / 0.6 | Where the preview goes if it can't attach under the objectives panel (other game modes, HUD mods). |
+
+## Compatibility
+
+- **Don't install** together with KubeRoot's CommandQueue, Command Queue with Save or CommandQueueExtended.
+  They do the same job and will conflict.
+- Works with LookingGlass. LookingGlassCommandFix isn't needed.
+- Multiplayer: only the players who want queues need the mod. Pausing only happens in single player.
+
+## Changelog
+
+See the **Changelog** tab on this page.
+
+## Building from source
+
+Requires the .NET SDK (6 or newer). Game and mod references come from NuGet, using the BepInEx package feed
+in `nuget.config`, so no game files or extra repositories are needed:
 
 ```
 dotnet build -c Release
@@ -31,49 +133,3 @@ dotnet build -c Release
 
 The mod is `CommandQueue/bin/Release/netstandard2.1/CommandQueue.dll`. For a new game version, update the
 `RiskOfRain2.GameLibs` and `MMHOOK.RoR2` versions in `CommandQueue/CommandQueue.csproj`.
-
-# Release Notes
-
-2.0.0
-
-- Updated for Risk of Rain 2 1.5. Adds Hallowed and Hex queues.
-- Fixed white boxes instead of item icons in the queue menu, and added item tooltips.
-- The queue now wraps onto multiple rows.
-- New Command Queue layout: tier sidebar on the left, the queue and a scrolling item grid on the right.
-- Pauses the game while the queue or saves page is open (single player), and shows the next queued items on the HUD. Both can be turned off in the config.
-- Fixed auto-picked command essences giving the wrong item when LookingGlass is installed (no need for LookingGlassCommandFix).
-- Unlimited named saves with rename, overwrite and delete. Saves now live in `BepInEx/config/CommandQueue.saves.json`. Old slot saves and CommandQueueExtended saves are imported automatically.
-- See CHANGELOG.md for the full list.
-
-1.7.0.
-- Updated to version 1.7.0 of CommandQueue Mod
-- Updated to work for Alloyed Collective
-
-1.6.1
-
-- Fixed save load button so now it acts properly instead of needing the user to be in commandqueue for it function properly.
-- Side effect is that the save and load buttons are smaller but they are still a usable size.
-
-1.6.0
-
-- Deja vu of 1.5.0... I swear :D
-
-1.5.1
-
-- Moved Saves button to be in line with command queue and scoreboard making it more clear.
-- **KNOWN ISSUE** the saves button acts the same as the item rarity buttons, this means you have to click the commandqueue button then the saves button to view the saves.
-- Item saves should now stay the same even if you add new items via mods or updates. Caveat being that the items need to stay the same name, so if a mod developer renames something sniper_scope to big_sniper_scope it will break but it's a better alternative to the previous option which is everytime an item is added or removed you item list is effectively bricked.
-
-As a note: I will try to resolve the known issue stated above to the best of my abilities. I am unsure if/when that fix will come.
-
-1.5.0
-
-- Uploaded wrong DLL like an intelligent Neanderthal
-
-1.0.1
-
-- Minor file updates for readme and clarity. No Gameplay impact.
-
-1.0.0
-
-- Initial Update to fix for latest SOTS version.

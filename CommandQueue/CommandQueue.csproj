@@ -8,7 +8,8 @@
   <Target Name="EmbedLocal" BeforeTargets="PrepareForBuild">
     <ItemGroup>
       <EmbeddedResource Include="repeat-solid.png"/>
-      <EmbeddedResource Include="icon.png"/>
+      <!-- The package icon, also shown in the in-game mod options. -->
+      <EmbeddedResource Include="../ReleaseAssets/icon.png" LogicalName="CommandQueue.icon.png"/>
     </ItemGroup>
   </Target>
 
