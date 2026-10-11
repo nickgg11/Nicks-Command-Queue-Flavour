@@ -1,0 +1,6 @@
+# Normalize line endings in the repository; checkouts use the platform's endings.
+* text=auto
+
+*.png binary
+*.pdn binary
+*.dll binary

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <Target Name="EmbedLocal" BeforeTargets="PrepareForBuild">
+    <ItemGroup>
+      <EmbeddedResource Include="repeat-solid.png"/>
+      <EmbeddedResource Include="icon.png"/>
+    </ItemGroup>
+  </Target>
+
+  <!--
+    Game and mod references come from NuGet (see nuget.config for the BepInEx feed).
+    To update for a new game version, bump RiskOfRain2.GameLibs and MMHOOK.RoR2.
+    Publicize="true" makes private game members accessible at compile time; the
+    SkipVerification attribute in CommandQueue.cs makes that work at runtime.
+  -->
+  <ItemGroup>
+    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.3" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.4.21" />
+    <PackageReference Include="RiskOfRain2.GameLibs" Version="1.5.0-r.1" Publicize="true" />
+    <PackageReference Include="UnityEngine.Modules" Version="2021.3.45" IncludeAssets="compile" />
+    <PackageReference Include="MMHOOK.RoR2" Version="2026.10.8" NoWarn="NU1701" />
+    <PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.6" Publicize="true" />
+  </ItemGroup>
+
+</Project>
