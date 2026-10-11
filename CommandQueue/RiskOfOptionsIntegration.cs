@@ -45,9 +45,29 @@ namespace CommandQueue
             ModSettingsManager.AddOption(new SliderOption(ModConfig.bigItemButtonScale, new SliderConfig{ min = 0.1f, max = 10f, FormatString = "{0:F2}"}));
             ModSettingsManager.AddOption(new CheckBoxOption(ModConfig.matchItemBarWidth));
             ModSettingsManager.AddOption(new CheckBoxOption(ModConfig.pauseWhileOpen));
-            ModSettingsManager.AddOption(new CheckBoxOption(ModConfig.showQueuePreview));
-            ModSettingsManager.AddOption(new SliderOption(ModConfig.queuePreviewX, new SliderConfig{ min = 0f, max = 1f, FormatString = "{0:F3}"}));
-            ModSettingsManager.AddOption(new SliderOption(ModConfig.queuePreviewY, new SliderConfig{ min = 0f, max = 1f, FormatString = "{0:F3}"}));
+            // The HUD preview gets its own clearly named category; the config keys alone ("Enabled",
+            // "PositionX") read ambiguously in the options menu.
+            const string previewCategory = "Command Queue Preview";
+            BaseOptionConfig.IsDisabledDelegate previewDisabled = () => !ModConfig.showQueuePreview.Value;
+            ModSettingsManager.AddOption(new CheckBoxOption(ModConfig.showQueuePreview, new CheckBoxConfig
+            {
+                category = previewCategory,
+                name = "Show Command Queue Preview",
+            }));
+            ModSettingsManager.AddOption(new SliderOption(ModConfig.queuePreviewX, new SliderConfig
+            {
+                category = previewCategory,
+                name = "Fallback Position X",
+                min = 0f, max = 1f, FormatString = "{0:F3}",
+                checkIfDisabled = previewDisabled,
+            }));
+            ModSettingsManager.AddOption(new SliderOption(ModConfig.queuePreviewY, new SliderConfig
+            {
+                category = previewCategory,
+                name = "Fallback Position Y",
+                min = 0f, max = 1f, FormatString = "{0:F3}",
+                checkIfDisabled = previewDisabled,
+            }));
 
             foreach (var itemTierDef in ItemTierCatalog.allItemTierDefs)
             {
