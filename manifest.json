@@ -1,5 +1,5 @@
 {
-  "name": "CommandQueueWithSaveSOTSFix",
+  "name": "Nicks_Command_Queue_Flavour",
   "version_number": "2.0.0",
   "website_url": "https://github.com/nickgg11/Nicks-Command-Queue-Flavour",
   "description": "Queue items to auto-pick from Command essences, with named saves. Updated for RoR2 1.5 (Hallowed and Hex tiers).",

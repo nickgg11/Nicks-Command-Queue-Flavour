@@ -133,3 +133,9 @@ dotnet build -c Release
 
 The mod is `CommandQueue/bin/Release/netstandard2.1/CommandQueue.dll`. For a new game version, update the
 `RiskOfRain2.GameLibs` and `MMHOOK.RoR2` versions in `CommandQueue/CommandQueue.csproj`.
+
+To build and pack the Thunderstore zip in one step, run:
+
+```
+powershell -ExecutionPolicy Bypass -File package.ps1
+```
